@@ -1,0 +1,14 @@
+Filename	Artist	Title	Genre	Year	Bitrate	Size (MB)	Duration (s)
+Sub Focus - Solar System.flac	Sub Focus	Solar System	Drum & Bass	2019-07-26	1098.6627777777778	37.7195930480957	288.0
+Scatman John - Scatman.flac	Scatman John	Scatman (ski-ba-bop-ba-dop-bop)		1994	1040.0609233460361	26.461688995361328	213.42666666666668
+Gala - Freed From Desire.wav		Freed From Desire			1411.2	35.66902542114258	212.02666666666667
+Karol G - Bichota.flac	KAROL G	BICHOTA	Latin Hip-Hop	2021	799.2979555290256	17.026569366455078	178.69333333333333
+Tiesto - The Motto.wav	Tiesto & Ava Max	The Motto	House	2021	1411.2	27.728214263916016	164.81854875283446
+Eddy Grant - Electric Avenue.flac	Eddy Grant	Electric Avenue	Pop	2002-07-02	908.7555013077593	24.851383209228516	229.4
+Tiësto - The Motto.flac	Tiësto & Ava Max	The Motto	Pop	2022	1041.954911040702	20.38546085357666	164.12
+Benassi Bros - Every Single Day.flac	Benassi Bros. & Dhany	Every Single Day	Dance	2005-03-07	1023.0353914465998	34.789788246154785	285.26666666666665
+Etnica - Impact.flac	Etnica	Impact	Psy-Trance	2012	798.5038334230776	50.195478439331055	527.3239455782312
+Gina G – Ti Amo.flac	Gina G	Ti Amo	pop	1997	1009.5212310576472	20.54197120666504	170.69333333333333
+Boundless - Liquid Earth.wav					1411.2	75.74068069458008	450.2257142857143
+Ummet Ozcan - My Beat Goes.flac	Ummet Ozcan	My Beat Goes	Dance	2023-12-15	1031.6346515151515	27.828715324401855	226.28571428571428
+French Affair - My Heart Goes Boom.flac	French Affair	My Heart Goes Boom (La Di Da Da)	Pop	2000	955.2709368561386	25.05601406097412	220.02666666666667
