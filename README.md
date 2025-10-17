@@ -1,9 +1,7 @@
 ## Description
 
-# AudioCraft
-Audio analyzer and organizer.
-
-Motivation: TBD
+# TrackCraft
+Audi track analyzer and organizer.
 
 ## Content
 
@@ -46,3 +44,4 @@ This project is licensed under the BSD 3-Clause License.
 (see the LICENSE.md file for details)
 
  
+
