@@ -1,0 +1,107 @@
+# ========================================
+# Projects files/folders
+# ========================================
+extras/
+
+# ========================================
+# OS: macOS / Windows System Junk
+# ========================================
+.DS_Store
+.AppleDouble
+._*  # AppleDouble fork files for metadata (icons, labels, preview info)
+.LSOverride
+.Trashes
+.Spotlight-V100
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+Icon?
+*.spec
+node_modules/
+.so  # due to C/C++ or Cython modules
+*.dll  # Windows dynamic libraries
+*.pyd  # Windows Python extension modules
+*.dylib  # # macOS dynamic libraries
+
+# ========================================
+# Python Bytecode / Cache
+# ========================================
+__pycache__/
+*.py[cod]
+*$py.class
++.python_history
++.ipython/
+
+# ========================================
+# Virtual Environments / Python Packaging
+# ========================================
+.venv/
+venv/
+env/
+env.*/
+.env
+.env.*/
+.envrc  # direnv (per-project auto-activate)
+.python-version
+__pypackages__/
+Pipfile.lock
+poetry.lock
+*.egg-info/
+.eggs/
+dist/
+build/
+pip-wheel-metadata/
+wheels/
+
+# ========================================
+# Test / Coverage / Logs
+# ========================================
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+.pyre/
+*.log
+
+# ========================================
+# IDEs
+# ========================================
+.vscode/
+*.code-workspace
+.idea/
+*.iml
+.ipynb_checkpoints/
+*.ipynb~
+
+# ========================================
+# Data / Cache Folders (Optional)
+# ========================================
+# data/cache/
+# tmp/
+# logs/
+.ruff_cache/
+.pytest_cache/
+coverage.xml  # pytest-cov XML output
+
+# ========================================
+# Databases (local/dev)
+# ========================================
+*.sqlite
+*.db
+
+# ========================================
+# Media / Binary (Consider Git LFS)
+# Uncomment if using Git LFS
+# ========================================
+# *.mp4
+# *.mp3
+# *.wav
+# *.mov
+# *.flac
+# *.jpg
+# *.png
+# *.zip
+# *.tar
+# *.tar.gz
