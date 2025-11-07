@@ -1,0 +1,44 @@
+name: core
+channels: [conda-forge]
+channel_priority: strict
+dependencies: 
+
+# Essentials
+- python=3.13.* # stdlib(os, math, pathlib, asyncio, etc.) + Cython
+- pip           		# packaging, runtime
+- pip:
+    - detect-secrets==1.5.0
+
+- ipython       	# improved REPL
+
+# Performance
+- llvm-openmp  # multithreading API used by NumPy, SciPy, scikit-learn etc.
+- ninja         		# fast low-level build tool auto-detected by cmake
+- pkg-config    	#
+- cmake    		# C/C++ or Fortran extensions
+- cython      		# 2D/3D plotting in the IPython console
+
+# Formatting
+- black         		# formatter
+- ruff          		# linter and import sorter
+- mypy          	# type-checker (static)
+- pytest        		# tester
+- pre-commit   	# keeps repo clean by auto-checking during git commits
+- rich             		# colored log + pretty print
+
+# Common packages
+- numpy         	# arrays, linear algebra, binary-heavy
+- matplotlib    	# plotter
+- pandas  		# data frames
+- seaborn          	# pretty stats plots
+- requests         	# API calls
+
+
+# Specific packages
+- tinytag 		# lightt audio metadata
+- mutagen           # deep metadata handling / tagging
+- spotipy		# Spotify Web API client
+- beautifulsoup4   # web scraping (for metadata cleanup)
+- lxml             	# fast parser backend for BeautifulSoup
+- tqdm             	# progress bars during metadata scan
+
