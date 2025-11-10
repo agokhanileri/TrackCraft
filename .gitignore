@@ -2,7 +2,10 @@
 # Projects files/folders
 # ========================================
 inputs/
+outputs/
 extras/
+.gitconfig
+.secrets.baseline
 
 # ========================================
 # OS: macOS / Windows System Junk
@@ -106,3 +109,4 @@ coverage.xml  # pytest-cov XML output
 # *.zip
 # *.tar
 # *.tar.gz
+inputs/*.aiff
