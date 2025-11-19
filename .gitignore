@@ -109,4 +109,3 @@ coverage.xml  # pytest-cov XML output
 # *.zip
 # *.tar
 # *.tar.gz
-inputs/*.aiff
