@@ -1,0 +1,1692 @@
+diff --git a/.editorconfig b/.editorconfig
+new file mode 100644
+index 0000000..d18c80f
+--- /dev/null
++++ b/.editorconfig
+@@ -0,0 +1,15 @@
++root = true
++
++[*]
++charset = utf-8
++end_of_line = lf
++insert_final_newline = true
++trim_trailing_whitespace = true
++indent_style = space
++indent_size = 4
++
++[*.md]
++trim_trailing_whitespace = false
++
++[*.yml]
++indent_size = 2
+diff --git a/.gitattributes b/.gitattributes
+new file mode 100644
+index 0000000..062ab1e
+--- /dev/null
++++ b/.gitattributes
+@@ -0,0 +1,50 @@
++# ========================================
++# Text: Enforce Unix LF
++# ========================================
++* text=auto eol=lf
++
++# Common text formats (explicit, not strictly required under the rule above)
++*.md  text eol=lf
++*.txt text eol=lf
++*.py  text eol=lf
++*.sh  text eol=lf
++*.bash text eol=lf
++*.yml text eol=lf
++*.yaml text eol=lf
++*.toml text eol=lf
++*.json text eol=lf
++*.ini text eol=lf
++*.cfg text eol=lf
++*.env text eol=lf
++*.gitignore text eol=lf
++.gitattributes text eol=lf
++
++# ========================================
++# Binary files (Git usually detects automatically)
++# ========================================
++*.png  -text
++*.jpg  -text
++*.jpeg -text
++*.gif  -text
++*.wav  -text
++*.mp3  -text
++*.mp4  -text
++*.zip  -text
++*.tar  -text
++*.gz   -text
++
++# ========================================
++# Jupyter Notebooks
++# ========================================
++# Option 1: if you have jupyternotebook diff driver configured
++# *.ipynb diff=jupyternotebook
++# Option 2: if you do NOT, leave them binary-like to avoid noisy diffs
++*.ipynb -text
++
++# ========================================
++# Optional: Git LFS (uncomment when using)
++# ========================================
++# *.mp4 filter=lfs diff=lfs merge=lfs -text
++# *.mp3 filter=lfs diff=lfs merge=lfs -text
++# *.zip filter=lfs diff=lfs merge=lfs -text
++# *.png filter=lfs diff=lfs merge=lfs -text
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..9c0725b
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,111 @@
++# ========================================
++# Projects files/folders
++# ========================================
++inputs/
++outputs/
++extras/
++.gitconfig
++.secrets.baseline
++
++# ========================================
++# OS: macOS / Windows System Junk
++# ========================================
++.DS_Store
++.AppleDouble
++._*  # AppleDouble fork files for metadata (icons, labels, preview info)
++.LSOverride
++.Trashes
++.Spotlight-V100
++Thumbs.db
++ehthumbs.db
++Desktop.ini
++Icon?
++*.spec
++node_modules/
++.so  # due to C/C++ or Cython modules
++*.dll  # Windows dynamic libraries
++*.pyd  # Windows Python extension modules
++*.dylib  # # macOS dynamic libraries
++
++# ========================================
++# Python Bytecode / Cache
++# ========================================
++__pycache__/
++*.py[cod]
++*$py.class
+++.python_history
+++.ipython/
++
++# ========================================
++# Virtual Environments / Python Packaging
++# ========================================
++.venv/
++venv/
++env/
++env.*/
++.env
++.env.*/
++.envrc  # direnv (per-project auto-activate)
++.python-version
++__pypackages__/
++Pipfile.lock
++poetry.lock
++*.egg-info/
++.eggs/
++dist/
++build/
++pip-wheel-metadata/
++wheels/
++
++# ========================================
++# Test / Coverage / Logs
++# ========================================
++.coverage
++.coverage.*
++htmlcov/
++.tox/
++.mypy_cache/
++.dmypy.json
++.pyre/
++*.log
++
++# ========================================
++# IDEs
++# ========================================
++.vscode/
++*.code-workspace
++.idea/
++*.iml
++.ipynb_checkpoints/
++*.ipynb~
++
++# ========================================
++# Data / Cache Folders (Optional)
++# ========================================
++# data/cache/
++# tmp/
++# logs/
++.ruff_cache/
++.pytest_cache/
++coverage.xml  # pytest-cov XML output
++
++# ========================================
++# Databases (local/dev)
++# ========================================
++*.sqlite
++*.db
++
++# ========================================
++# Media / Binary (Consider Git LFS)
++# Uncomment if using Git LFS
++# ========================================
++# *.mp4
++# *.mp3
++# *.wav
++# *.mov
++# *.flac
++# *.jpg
++# *.png
++# *.zip
++# *.tar
++# *.tar.gz
+diff --git a/.pre-commit-config.yaml b/.pre-commit-config.yaml
+new file mode 100644
+index 0000000..baaf513
+--- /dev/null
++++ b/.pre-commit-config.yaml
+@@ -0,0 +1,34 @@
++repos:
++  # Core sanity checks (very fast)
++  - repo: https://github.com/pre-commit/pre-commit-hooks
++    rev: v5.0.0
++    hooks:
++      - id: check-yaml
++      - id: check-merge-conflict
++      - id: end-of-file-fixer
++      - id: trailing-whitespace
++      - id: mixed-line-ending
++        args: [--fix=lf]
++
++  # Ruff: linter + import sorter (fast)
++  - repo: https://github.com/astral-sh/ruff-pre-commit
++    rev: v0.7.0
++    hooks:
++      - id: ruff
++        args: [--fix]
++      - id: ruff-format  # ruff's formatter for non-Black files; harmless alongside Black
++
++  # Black: opinionated formatter (stable default)
++  - repo: https://github.com/psf/black
++    rev: 24.8.0
++    hooks:
++      - id: black
++        args: [--line-length=99]
++
++  # Optional: detect secrets (cheap insurance)
++  - repo: https://github.com/Yelp/detect-secrets
++    rev: v1.5.0
++    hooks:
++      - id: detect-secrets
++        args: ["--baseline", ".secrets.baseline"]
++        exclude: ^tests/
+diff --git a/.secrets.baseline b/.secrets.baseline
+new file mode 100644
+index 0000000..7c61935
+--- /dev/null
++++ b/.secrets.baseline
+@@ -0,0 +1,143 @@
++{
++  "version": "1.5.0",
++  "plugins_used": [
++    {
++      "name": "ArtifactoryDetector"
++    },
++    {
++      "name": "AWSKeyDetector"
++    },
++    {
++      "name": "AzureStorageKeyDetector"
++    },
++    {
++      "name": "Base64HighEntropyString",
++      "limit": 4.5
++    },
++    {
++      "name": "BasicAuthDetector"
++    },
++    {
++      "name": "CloudantDetector"
++    },
++    {
++      "name": "DiscordBotTokenDetector"
++    },
++    {
++      "name": "GitHubTokenDetector"
++    },
++    {
++      "name": "GitLabTokenDetector"
++    },
++    {
++      "name": "HexHighEntropyString",
++      "limit": 3.0
++    },
++    {
++      "name": "IbmCloudIamDetector"
++    },
++    {
++      "name": "IbmCosHmacDetector"
++    },
++    {
++      "name": "IPPublicDetector"
++    },
++    {
++      "name": "JwtTokenDetector"
++    },
++    {
++      "name": "KeywordDetector",
++      "keyword_exclude": ""
++    },
++    {
++      "name": "MailchimpDetector"
++    },
++    {
++      "name": "NpmDetector"
++    },
++    {
++      "name": "OpenAIDetector"
++    },
++    {
++      "name": "PrivateKeyDetector"
++    },
++    {
++      "name": "PypiTokenDetector"
++    },
++    {
++      "name": "SendGridDetector"
++    },
++    {
++      "name": "SlackDetector"
++    },
++    {
++      "name": "SoftlayerDetector"
++    },
++    {
++      "name": "SquareOAuthDetector"
++    },
++    {
++      "name": "StripeDetector"
++    },
++    {
++      "name": "TelegramBotTokenDetector"
++    },
++    {
++      "name": "TwilioKeyDetector"
++    }
++  ],
++  "filters_used": [
++    {
++      "path": "detect_secrets.filters.allowlist.is_line_allowlisted"
++    },
++    {
++      "path": "detect_secrets.filters.common.is_ignored_due_to_verification_policies",
++      "min_level": 2
++    },
++    {
++      "path": "detect_secrets.filters.heuristic.is_indirect_reference"
++    },
++    {
++      "path": "detect_secrets.filters.heuristic.is_likely_id_string"
++    },
++    {
++      "path": "detect_secrets.filters.heuristic.is_lock_file"
++    },
++    {
++      "path": "detect_secrets.filters.heuristic.is_not_alphanumeric_string"
++    },
++    {
++      "path": "detect_secrets.filters.heuristic.is_potential_uuid"
++    },
++    {
++      "path": "detect_secrets.filters.heuristic.is_prefixed_with_dollar_sign"
++    },
++    {
++      "path": "detect_secrets.filters.heuristic.is_sequential_string"
++    },
++    {
++      "path": "detect_secrets.filters.heuristic.is_swagger_file"
++    },
++    {
++      "path": "detect_secrets.filters.heuristic.is_templated_secret"
++    },
++    {
++      "path": "detect_secrets.filters.regex.should_exclude_file",
++      "pattern": [
++        "(^\\.git/|^locks/|^outputs/)"
++      ]
++    }
++  ],
++  "results": {
++    ".ruff_cache/CACHEDIR.TAG": [
++      {
++        "type": "Hex High Entropy String",
++        "filename": ".ruff_cache/CACHEDIR.TAG",
++        "hashed_secret": "e8f8c345877b2411a59897798e422b15b0c16d76",
++        "is_verified": false,
++        "line_number": 1
++      }
++    ]
++  },
++  "generated_at": "2025-10-27T23:30:34Z"
++}
+diff --git a/.spotipy_cache b/.spotipy_cache
+new file mode 100644
+index 0000000..823b791
+--- /dev/null
++++ b/.spotipy_cache
+@@ -0,0 +1 @@
++{"access_token": "BQBJNXN7Po0IZ6vKQfSnPALjQ3Phc1TFNjZFULvLCY7IN8j2e2IXfg3NnAFWIJatSw20bpSbmNlehI6G__rMJXu5bPaL7RrAm-kjicZKqpZaeS_KIAxjHPTB2aFnLCpqchiAe1Yo3Lo", "token_type": "Bearer", "expires_in": 3600, "expires_at": 1762753350}
+\ No newline at end of file
+diff --git a/README.md b/README.md
+new file mode 100644
+index 0000000..1c08f00
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1,85 @@
++# TrackCraft
++
++Pipeline for ingesting, enriching, and normalizing audio metadata from a local library.
++
++## Project layout
++- `trackcraft.py` – CLI entrypoint orchestrating ingest, Spotify enrichment, and optional feature hooks.
++- `inputs/` and `outputs/` – default I/O locations for audio files and generated TSVs.
++- `trackcraft/` – modular helpers (ingestion, cleanup, Spotify enrichment, feature stubs).
++
++## Requirements
++- Python 3.12+
++- Install dependencies: `pip install -e .`
++- Spotify API credentials in environment variables:
++  - `SPOTIPY_CLIENT_ID`
++  - `SPOTIPY_CLIENT_SECRET`
++
++## Usage
++Run the CLI from the repository root:
++
++```bash
++# Step 1: ingest local metadata and write df0.tsv/df1.tsv under outputs/
++python trackcraft.py ingest --input-dir ./inputs --output-dir ./outputs
++
++# Step 2: ingest + enrich with Spotify (year, popularity, audio features)
++python trackcraft.py spotify --input-dir ./inputs --output-dir ./outputs
++
++# Full pipeline: ingest, normalize names/titles/artists/genres, optional Spotify, feature stubs
++python trackcraft.py full --input-dir ./inputs --output-dir ./outputs [--skip-spotify]
++```
++
++Each step saves intermediate TSVs into `outputs/` and logs skipped files to `outputs/skipped.txt` when applicable.
++
++## Configure git remotes (push to GitHub)
++If you cloned without a remote, add one that points to your GitHub repository before pushing:
++
++```bash
++# View existing remotes
++git remote -v
++
++# Add your GitHub repo (SSH)
++git remote add origin git@github.com:<your-user>/<your-repo>.git
++
++# Or, add via HTTPS (will prompt for a personal access token on push)
++git remote add origin https://github.com/<your-user>/<your-repo>.git
++
++# Verify
++git remote -v
++
++# Push current branch (creates upstream tracking)
++git push -u origin <branch-name>
++```
++
++If a remote named `origin` already exists, update it instead of adding:
++
++```bash
++git remote set-url origin git@github.com:<your-user>/<your-repo>.git
++```
++
++## Download a patch without pushing
++If you prefer to apply the latest changes manually, a patch file containing the current repository snapshot is generated under `patches/trackcraft_latest.patch`:
++
++```bash
++# from the repo root
++git apply patches/trackcraft_latest.patch
++```
++
++### Serve a clickable download link
++Use the helper script to expose the patch over HTTP and print a ready-to-click URL:
++
++```bash
++# from the repo root
++python serve_patch.py --port 8000
++```
++
++The script chooses the first non-loopback IP it can find and outputs a link such as `http://192.168.x.x:8000/patches/trackcraft_latest.patch`. Share that URL or fetch it with `curl`/`wget`. Press Ctrl+C to stop the server.
++
++You can then push the changes from your own machine or fork.
++
++## Notes
++- Normalization modules (`fix_filename.py`, `fix_title.py`, `fix_artist.py`, `fix_genres.py`) currently perform lightweight cleanup for reporting; writing changes back to files will be added later.
++- Feature extractors (`extract_tempo.py`, `extract_key.py`, `extract_mood.py`) are placeholders for future local/remote analyzers.
++- Supported audio extensions: `.mp3`, `.flac`, `.wav`, `.m4a`, `.aiff`, `.aif`.
++
++## License
++This project is licensed under the BSD 3-Clause License. See `LICENSE.md` for details.
+diff --git a/environment.yml b/environment.yml
+new file mode 100644
+index 0000000..169de73
+--- /dev/null
++++ b/environment.yml
+@@ -0,0 +1,44 @@
++name: core
++channels: [conda-forge]
++channel_priority: strict
++dependencies: 
++
++# Essentials
++- python=3.13.* # stdlib(os, math, pathlib, asyncio, etc.) + Cython
++- pip           		# packaging, runtime
++- pip:
++    - detect-secrets==1.5.0
++
++- ipython       	# improved REPL
++
++# Performance
++- llvm-openmp  # multithreading API used by NumPy, SciPy, scikit-learn etc.
++- ninja         		# fast low-level build tool auto-detected by cmake
++- pkg-config    	#
++- cmake    		# C/C++ or Fortran extensions
++- cython      		# 2D/3D plotting in the IPython console
++
++# Formatting
++- black         		# formatter
++- ruff          		# linter and import sorter
++- mypy          	# type-checker (static)
++- pytest        		# tester
++- pre-commit   	# keeps repo clean by auto-checking during git commits
++- rich             		# colored log + pretty print
++
++# Common packages
++- numpy         	# arrays, linear algebra, binary-heavy
++- matplotlib    	# plotter
++- pandas  		# data frames
++- seaborn          	# pretty stats plots
++- requests         	# API calls
++
++
++# Specific packages
++- tinytag 		# lightt audio metadata
++- mutagen           # deep metadata handling / tagging
++- spotipy		# Spotify Web API client
++- beautifulsoup4   # web scraping (for metadata cleanup)
++- lxml             	# fast parser backend for BeautifulSoup
++- tqdm             	# progress bars during metadata scan
++
+diff --git a/inputs/.gitkeep b/inputs/.gitkeep
+new file mode 100644
+index 0000000..e69de29
+diff --git a/outputs/.gitkeep b/outputs/.gitkeep
+new file mode 100644
+index 0000000..e69de29
+diff --git a/patches/trackcraft_latest.patch b/patches/trackcraft_latest.patch
+new file mode 100644
+index 0000000..ee85f0b
+--- /dev/null
++++ b/patches/trackcraft_latest.patch
+@@ -0,0 +1,482 @@
++diff --git a/.editorconfig b/.editorconfig
++new file mode 100644
++index 0000000..d18c80f
++--- /dev/null
+++++ b/.editorconfig
++@@ -0,0 +1,15 @@
+++root = true
+++
+++[*]
+++charset = utf-8
+++end_of_line = lf
+++insert_final_newline = true
+++trim_trailing_whitespace = true
+++indent_style = space
+++indent_size = 4
+++
+++[*.md]
+++trim_trailing_whitespace = false
+++
+++[*.yml]
+++indent_size = 2
++diff --git a/.gitattributes b/.gitattributes
++new file mode 100644
++index 0000000..062ab1e
++--- /dev/null
+++++ b/.gitattributes
++@@ -0,0 +1,50 @@
+++# ========================================
+++# Text: Enforce Unix LF
+++# ========================================
+++* text=auto eol=lf
+++
+++# Common text formats (explicit, not strictly required under the rule above)
+++*.md  text eol=lf
+++*.txt text eol=lf
+++*.py  text eol=lf
+++*.sh  text eol=lf
+++*.bash text eol=lf
+++*.yml text eol=lf
+++*.yaml text eol=lf
+++*.toml text eol=lf
+++*.json text eol=lf
+++*.ini text eol=lf
+++*.cfg text eol=lf
+++*.env text eol=lf
+++*.gitignore text eol=lf
+++.gitattributes text eol=lf
+++
+++# ========================================
+++# Binary files (Git usually detects automatically)
+++# ========================================
+++*.png  -text
+++*.jpg  -text
+++*.jpeg -text
+++*.gif  -text
+++*.wav  -text
+++*.mp3  -text
+++*.mp4  -text
+++*.zip  -text
+++*.tar  -text
+++*.gz   -text
+++
+++# ========================================
+++# Jupyter Notebooks
+++# ========================================
+++# Option 1: if you have jupyternotebook diff driver configured
+++# *.ipynb diff=jupyternotebook
+++# Option 2: if you do NOT, leave them binary-like to avoid noisy diffs
+++*.ipynb -text
+++
+++# ========================================
+++# Optional: Git LFS (uncomment when using)
+++# ========================================
+++# *.mp4 filter=lfs diff=lfs merge=lfs -text
+++# *.mp3 filter=lfs diff=lfs merge=lfs -text
+++# *.zip filter=lfs diff=lfs merge=lfs -text
+++# *.png filter=lfs diff=lfs merge=lfs -text
++diff --git a/.gitignore b/.gitignore
++new file mode 100644
++index 0000000..9c0725b
++--- /dev/null
+++++ b/.gitignore
++@@ -0,0 +1,111 @@
+++# ========================================
+++# Projects files/folders
+++# ========================================
+++inputs/
+++outputs/
+++extras/
+++.gitconfig
+++.secrets.baseline
+++
+++# ========================================
+++# OS: macOS / Windows System Junk
+++# ========================================
+++.DS_Store
+++.AppleDouble
+++._*  # AppleDouble fork files for metadata (icons, labels, preview info)
+++.LSOverride
+++.Trashes
+++.Spotlight-V100
+++Thumbs.db
+++ehthumbs.db
+++Desktop.ini
+++Icon?
+++*.spec
+++node_modules/
+++.so  # due to C/C++ or Cython modules
+++*.dll  # Windows dynamic libraries
+++*.pyd  # Windows Python extension modules
+++*.dylib  # # macOS dynamic libraries
+++
+++# ========================================
+++# Python Bytecode / Cache
+++# ========================================
+++__pycache__/
+++*.py[cod]
+++*$py.class
++++.python_history
++++.ipython/
+++
+++# ========================================
+++# Virtual Environments / Python Packaging
+++# ========================================
+++.venv/
+++venv/
+++env/
+++env.*/
+++.env
+++.env.*/
+++.envrc  # direnv (per-project auto-activate)
+++.python-version
+++__pypackages__/
+++Pipfile.lock
+++poetry.lock
+++*.egg-info/
+++.eggs/
+++dist/
+++build/
+++pip-wheel-metadata/
+++wheels/
+++
+++# ========================================
+++# Test / Coverage / Logs
+++# ========================================
+++.coverage
+++.coverage.*
+++htmlcov/
+++.tox/
+++.mypy_cache/
+++.dmypy.json
+++.pyre/
+++*.log
+++
+++# ========================================
+++# IDEs
+++# ========================================
+++.vscode/
+++*.code-workspace
+++.idea/
+++*.iml
+++.ipynb_checkpoints/
+++*.ipynb~
+++
+++# ========================================
+++# Data / Cache Folders (Optional)
+++# ========================================
+++# data/cache/
+++# tmp/
+++# logs/
+++.ruff_cache/
+++.pytest_cache/
+++coverage.xml  # pytest-cov XML output
+++
+++# ========================================
+++# Databases (local/dev)
+++# ========================================
+++*.sqlite
+++*.db
+++
+++# ========================================
+++# Media / Binary (Consider Git LFS)
+++# Uncomment if using Git LFS
+++# ========================================
+++# *.mp4
+++# *.mp3
+++# *.wav
+++# *.mov
+++# *.flac
+++# *.jpg
+++# *.png
+++# *.zip
+++# *.tar
+++# *.tar.gz
++diff --git a/.pre-commit-config.yaml b/.pre-commit-config.yaml
++new file mode 100644
++index 0000000..baaf513
++--- /dev/null
+++++ b/.pre-commit-config.yaml
++@@ -0,0 +1,34 @@
+++repos:
+++  # Core sanity checks (very fast)
+++  - repo: https://github.com/pre-commit/pre-commit-hooks
+++    rev: v5.0.0
+++    hooks:
+++      - id: check-yaml
+++      - id: check-merge-conflict
+++      - id: end-of-file-fixer
+++      - id: trailing-whitespace
+++      - id: mixed-line-ending
+++        args: [--fix=lf]
+++
+++  # Ruff: linter + import sorter (fast)
+++  - repo: https://github.com/astral-sh/ruff-pre-commit
+++    rev: v0.7.0
+++    hooks:
+++      - id: ruff
+++        args: [--fix]
+++      - id: ruff-format  # ruff's formatter for non-Black files; harmless alongside Black
+++
+++  # Black: opinionated formatter (stable default)
+++  - repo: https://github.com/psf/black
+++    rev: 24.8.0
+++    hooks:
+++      - id: black
+++        args: [--line-length=99]
+++
+++  # Optional: detect secrets (cheap insurance)
+++  - repo: https://github.com/Yelp/detect-secrets
+++    rev: v1.5.0
+++    hooks:
+++      - id: detect-secrets
+++        args: ["--baseline", ".secrets.baseline"]
+++        exclude: ^tests/
++diff --git a/.secrets.baseline b/.secrets.baseline
++new file mode 100644
++index 0000000..7c61935
++--- /dev/null
+++++ b/.secrets.baseline
++@@ -0,0 +1,143 @@
+++{
+++  "version": "1.5.0",
+++  "plugins_used": [
+++    {
+++      "name": "ArtifactoryDetector"
+++    },
+++    {
+++      "name": "AWSKeyDetector"
+++    },
+++    {
+++      "name": "AzureStorageKeyDetector"
+++    },
+++    {
+++      "name": "Base64HighEntropyString",
+++      "limit": 4.5
+++    },
+++    {
+++      "name": "BasicAuthDetector"
+++    },
+++    {
+++      "name": "CloudantDetector"
+++    },
+++    {
+++      "name": "DiscordBotTokenDetector"
+++    },
+++    {
+++      "name": "GitHubTokenDetector"
+++    },
+++    {
+++      "name": "GitLabTokenDetector"
+++    },
+++    {
+++      "name": "HexHighEntropyString",
+++      "limit": 3.0
+++    },
+++    {
+++      "name": "IbmCloudIamDetector"
+++    },
+++    {
+++      "name": "IbmCosHmacDetector"
+++    },
+++    {
+++      "name": "IPPublicDetector"
+++    },
+++    {
+++      "name": "JwtTokenDetector"
+++    },
+++    {
+++      "name": "KeywordDetector",
+++      "keyword_exclude": ""
+++    },
+++    {
+++      "name": "MailchimpDetector"
+++    },
+++    {
+++      "name": "NpmDetector"
+++    },
+++    {
+++      "name": "OpenAIDetector"
+++    },
+++    {
+++      "name": "PrivateKeyDetector"
+++    },
+++    {
+++      "name": "PypiTokenDetector"
+++    },
+++    {
+++      "name": "SendGridDetector"
+++    },
+++    {
+++      "name": "SlackDetector"
+++    },
+++    {
+++      "name": "SoftlayerDetector"
+++    },
+++    {
+++      "name": "SquareOAuthDetector"
+++    },
+++    {
+++      "name": "StripeDetector"
+++    },
+++    {
+++      "name": "TelegramBotTokenDetector"
+++    },
+++    {
+++      "name": "TwilioKeyDetector"
+++    }
+++  ],
+++  "filters_used": [
+++    {
+++      "path": "detect_secrets.filters.allowlist.is_line_allowlisted"
+++    },
+++    {
+++      "path": "detect_secrets.filters.common.is_ignored_due_to_verification_policies",
+++      "min_level": 2
+++    },
+++    {
+++      "path": "detect_secrets.filters.heuristic.is_indirect_reference"
+++    },
+++    {
+++      "path": "detect_secrets.filters.heuristic.is_likely_id_string"
+++    },
+++    {
+++      "path": "detect_secrets.filters.heuristic.is_lock_file"
+++    },
+++    {
+++      "path": "detect_secrets.filters.heuristic.is_not_alphanumeric_string"
+++    },
+++    {
+++      "path": "detect_secrets.filters.heuristic.is_potential_uuid"
+++    },
+++    {
+++      "path": "detect_secrets.filters.heuristic.is_prefixed_with_dollar_sign"
+++    },
+++    {
+++      "path": "detect_secrets.filters.heuristic.is_sequential_string"
+++    },
+++    {
+++      "path": "detect_secrets.filters.heuristic.is_swagger_file"
+++    },
+++    {
+++      "path": "detect_secrets.filters.heuristic.is_templated_secret"
+++    },
+++    {
+++      "path": "detect_secrets.filters.regex.should_exclude_file",
+++      "pattern": [
+++        "(^\\.git/|^locks/|^outputs/)"
+++      ]
+++    }
+++  ],
+++  "results": {
+++    ".ruff_cache/CACHEDIR.TAG": [
+++      {
+++        "type": "Hex High Entropy String",
+++        "filename": ".ruff_cache/CACHEDIR.TAG",
+++        "hashed_secret": "e8f8c345877b2411a59897798e422b15b0c16d76",
+++        "is_verified": false,
+++        "line_number": 1
+++      }
+++    ]
+++  },
+++  "generated_at": "2025-10-27T23:30:34Z"
+++}
++diff --git a/.spotipy_cache b/.spotipy_cache
++new file mode 100644
++index 0000000..823b791
++--- /dev/null
+++++ b/.spotipy_cache
++@@ -0,0 +1 @@
+++{"access_token": "BQBJNXN7Po0IZ6vKQfSnPALjQ3Phc1TFNjZFULvLCY7IN8j2e2IXfg3NnAFWIJatSw20bpSbmNlehI6G__rMJXu5bPaL7RrAm-kjicZKqpZaeS_KIAxjHPTB2aFnLCpqchiAe1Yo3Lo", "token_type": "Bearer", "expires_in": 3600, "expires_at": 1762753350}
++\ No newline at end of file
++diff --git a/README.md b/README.md
++new file mode 100644
++index 0000000..1c08f00
++--- /dev/null
+++++ b/README.md
++@@ -0,0 +1,85 @@
+++# TrackCraft
+++
+++Pipeline for ingesting, enriching, and normalizing audio metadata from a local library.
+++
+++## Project layout
+++- `trackcraft.py` – CLI entrypoint orchestrating ingest, Spotify enrichment, and optional feature hooks.
+++- `inputs/` and `outputs/` – default I/O locations for audio files and generated TSVs.
+++- `trackcraft/` – modular helpers (ingestion, cleanup, Spotify enrichment, feature stubs).
+++
+++## Requirements
+++- Python 3.12+
+++- Install dependencies: `pip install -e .`
+++- Spotify API credentials in environment variables:
+++  - `SPOTIPY_CLIENT_ID`
+++  - `SPOTIPY_CLIENT_SECRET`
+++
+++## Usage
+++Run the CLI from the repository root:
+++
+++```bash
+++# Step 1: ingest local metadata and write df0.tsv/df1.tsv under outputs/
+++python trackcraft.py ingest --input-dir ./inputs --output-dir ./outputs
+++
+++# Step 2: ingest + enrich with Spotify (year, popularity, audio features)
+++python trackcraft.py spotify --input-dir ./inputs --output-dir ./outputs
+++
+++# Full pipeline: ingest, normalize names/titles/artists/genres, optional Spotify, feature stubs
+++python trackcraft.py full --input-dir ./inputs --output-dir ./outputs [--skip-spotify]
+++```
+++
+++Each step saves intermediate TSVs into `outputs/` and logs skipped files to `outputs/skipped.txt` when applicable.
+++
+++## Configure git remotes (push to GitHub)
+++If you cloned without a remote, add one that points to your GitHub repository before pushing:
+++
+++```bash
+++# View existing remotes
+++git remote -v
+++
+++# Add your GitHub repo (SSH)
+++git remote add origin git@github.com:<your-user>/<your-repo>.git
+++
+++# Or, add via HTTPS (will prompt for a personal access token on push)
+++git remote add origin https://github.com/<your-user>/<your-repo>.git
+++
+++# Verify
+++git remote -v
+++
+++# Push current branch (creates upstream tracking)
+++git push -u origin <branch-name>
+++```
+++
+++If a remote named `origin` already exists, update it instead of adding:
+++
+++```bash
+++git remote set-url origin git@github.com:<your-user>/<your-repo>.git
+++```
+++
+++## Download a patch without pushing
+++If you prefer to apply the latest changes manually, a patch file containing the current repository snapshot is generated under `patches/trackcraft_latest.patch`:
+++
+++```bash
+++# from the repo root
+++git apply patches/trackcraft_latest.patch
+++```
+++
+++### Serve a clickable download link
+++Use the helper script to expose the patch over HTTP and print a ready-to-click URL:
+++
+++```bash
+++# from the repo root
+++python serve_patch.py --port 8000
+++```
+++
+++The script chooses the first non-loopback IP it can find and outputs a link such as `http://192.168.x.x:8000/patches/trackcraft_latest.patch`. Share that URL or fetch it with `curl`/`wget`. Press Ctrl+C to stop the server.
+++
+++You can then push the changes from your own machine or fork.
+++
+++## Notes
+++- Normalization modules (`fix_filename.py`, `fix_title.py`, `fix_artist.py`, `fix_genres.py`) currently perform lightweight cleanup for reporting; writing changes back to files will be added later.
+++- Feature extractors (`extract_tempo.py`, `extract_key.py`, `extract_mood.py`) are placeholders for future local/remote analyzers.
+++- Supported audio extensions: `.mp3`, `.flac`, `.wav`, `.m4a`, `.aiff`, `.aif`.
+++
+++## License
+++This project is licensed under the BSD 3-Clause License. See `LICENSE.md` for de
+\ No newline at end of file
+diff --git a/pyproject.toml b/pyproject.toml
+new file mode 100644
+index 0000000..3d0ddc3
+--- /dev/null
++++ b/pyproject.toml
+@@ -0,0 +1,33 @@
++[tool.black]
++line-length = 99
++target-version = ["py311"]
++skip-string-normalization = false
++
++[tool.ruff]
++line-length = 99
++target-version = "py311"
++
++[tool.ruff.lint]
++select = [
++  "E", "W",   # pycodestyle (PEP 8 checks)
++  "F",        # pyflakes
++  "I",        # import sorting (isort)
++  "UP",       # pyupgrade
++  "SIM",      # simplify
++  "N",        # naming
++  "B",        # bugbear
++  "C4",       # comprehensions
++  "TID",      # tidy imports
++]
++ignore = ["T201",  "D103", "D107", "B018"]
++# T201 - print() occurrences
++# D103 - missing function docstrings
++# D107 - missing class docstrings
++# B018 - unused loop vars
++
++[tool.ruff.lint.isort]
++combine-as-imports = true
++known-first-party = ["yourpkg"]
++
++[tool.pydocstyle]
++ignore = ["D100", "D101", "D102", "D103", "D107"]
+diff --git a/setup.cfg b/setup.cfg
+new file mode 100644
+index 0000000..5ecfe4a
+--- /dev/null
++++ b/setup.cfg
+@@ -0,0 +1,49 @@
++[metadata]
++name = pythoncraft
++version = 0.8.0
++author = AGI
++description = Python learning path
++long_description = file: README.md
++long_description_content_type = text/markdown
++license = MIT
++url = https://github.com/agokhanileri/pythoncraft
++classifiers =
++    Programming Language :: Python :: 3
++    Programming Language :: Python :: 3 :: Only
++    Programming Language :: Python :: 3.12
++    License :: OSI Approved :: MIT License
++    Operating System :: MacOS :: MacOS X
++
++[options]
++packages = find:
++python_requires = >=3.12
++install_requires =
++    numpy
++include_package_data = True
++zip_safe = False
++
++[options.packages.find]
++exclude =
++    tests*
++
++[options.extras_require]
++dev =
++    black
++    ruff
++    mypy
++    pytest
++    pre-commit
++    ipython
++
++# --- Tool configs that comfortably live in setup.cfg ---
++[tool:pytest]
++addopts = -q
++testpaths = tests
++
++[mypy]
++python_version = 3.12
++ignore_missing_imports = true
++warn_unused_ignores = true
++warn_redundant_casts = true
++warn_unused_configs = true
++disallow_untyped_defs = false
+diff --git a/trackcraft.py b/trackcraft.py
+new file mode 100644
+index 0000000..212df17
+--- /dev/null
++++ b/trackcraft.py
+@@ -0,0 +1,108 @@
++"""TrackCraft CLI entrypoint."""
++
++from __future__ import annotations
++
++import argparse
++from pathlib import Path
++
++import pandas as pd
++
++from trackcraft import (
++    extract_key,
++    extract_mood,
++    extract_tempo,
++    fix_artist,
++    fix_filename,
++    fix_genres,
++    fix_title,
++    read_metadata,
++    spoti,
++)
++from trackcraft.config import DEFAULT_INPUT_DIR, DEFAULT_OUTPUT_DIR
++
++
++def build_parser() -> argparse.ArgumentParser:
++    parser = argparse.ArgumentParser(description="TrackCraft metadata pipeline")
++    parser.add_argument(
++        "step", choices=["ingest", "spotify", "full"], help="Pipeline stage to run"
++    )
++    parser.add_argument(
++        "--input-dir", type=Path, default=DEFAULT_INPUT_DIR, help="Folder containing audio files"
++    )
++    parser.add_argument(
++        "--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR, help="Folder for generated outputs"
++    )
++    parser.add_argument(
++        "--skip-spotify", action="store_true", help="Skip Spotify enrichment during full run"
++    )
++    return parser
++
++
++def run_ingest(input_dir: Path, output_dir: Path) -> pd.DataFrame:
++    output_dir.mkdir(parents=True, exist_ok=True)
++
++    # Pull raw tags from supported audio files.
++    df_raw, skipped = read_metadata.read_local_metadata(input_dir)
++    df_raw.to_csv(output_dir / "df0.tsv", sep="\t", index=False)
++
++    # Standardize column formats for downstream steps.
++    df_formatted = read_metadata.format_metadata(df_raw)
++    df_formatted.to_csv(output_dir / "df1.tsv", sep="\t", index=False)
++
++    if skipped:
++        skipped_path = output_dir / "skipped.txt"
++        skipped_path.write_text("\n".join(skipped))
++        print(f"Skipped files logged to {skipped_path}")
++
++    print(f"Ingested {len(df_formatted)} tracks from {input_dir}")
++    return df_formatted
++
++
++def run_spotify(df: pd.DataFrame, output_dir: Path) -> pd.DataFrame:
++    enriched = spoti.enrich_with_spotify(df)
++    enriched.to_csv(output_dir / "df_spotify.tsv", sep="\t", index=False)
++    print("Spotify enrichment complete")
++    return enriched
++
++
++def run_full_pipeline(input_dir: Path, output_dir: Path, skip_spotify: bool) -> pd.DataFrame:
++    df_ingested = run_ingest(input_dir, output_dir)
++
++    # Optional cleanup stages for readability during reporting.
++    df_named = fix_filename.apply_filename_convention(df_ingested)
++    df_titled = fix_title.fix_titles(df_named)
++    df_artists = fix_artist.fix_artists(df_titled)
++    df_genres = fix_genres.fix_genres(df_artists)
++
++    df_features = df_genres
++    if not skip_spotify:
++        df_features = run_spotify(df_genres, output_dir)
++
++    # Placeholder local feature extraction hooks.
++    df_features = extract_tempo.extract_tempo(df_features)
++    df_features = extract_key.extract_key(df_features)
++    df_features = extract_mood.extract_mood(df_features)
++
++    df_features.to_csv(output_dir / "df_final.tsv", sep="\t", index=False)
++    print(f"Final dataset saved to {output_dir / 'df_final.tsv'}")
++    return df_features
++
++
++def main() -> None:
++    parser = build_parser()
++    args = parser.parse_args()
++
++    input_dir: Path = args.input_dir
++    output_dir: Path = args.output_dir
++
++    if args.step == "ingest":
++        run_ingest(input_dir, output_dir)
++    elif args.step == "spotify":
++        df_ingested = run_ingest(input_dir, output_dir)
++        run_spotify(df_ingested, output_dir)
++    else:
++        run_full_pipeline(input_dir, output_dir, args.skip_spotify)
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/trackcraft/__init__.py b/trackcraft/__init__.py
+new file mode 100644
+index 0000000..e69de29
+diff --git a/trackcraft/config.py b/trackcraft/config.py
+new file mode 100644
+index 0000000..14f072c
+--- /dev/null
++++ b/trackcraft/config.py
+@@ -0,0 +1,15 @@
++from pathlib import Path
++
++PROJECT_ROOT = Path(__file__).resolve().parent.parent
++DEFAULT_INPUT_DIR = PROJECT_ROOT / "inputs"
++DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "outputs"
++SUPPORTED_EXTENSIONS = (".mp3", ".flac", ".wav", ".m4a", ".aiff", ".aif")
++SPOTIFY_CACHE = PROJECT_ROOT / ".spotipy_cache"
++
++__all__ = [
++    "PROJECT_ROOT",
++    "DEFAULT_INPUT_DIR",
++    "DEFAULT_OUTPUT_DIR",
++    "SUPPORTED_EXTENSIONS",
++    "SPOTIFY_CACHE",
++]
+diff --git a/trackcraft/extract_key.py b/trackcraft/extract_key.py
+new file mode 100644
+index 0000000..250e336
+--- /dev/null
++++ b/trackcraft/extract_key.py
+@@ -0,0 +1,10 @@
++"""Optional musical key extraction placeholder."""
++
++from __future__ import annotations
++
++import pandas as pd
++
++
++def extract_key(df: pd.DataFrame) -> pd.DataFrame:
++    """Placeholder for key detection from audio analysis."""
++    return df.copy()
+diff --git a/trackcraft/extract_mood.py b/trackcraft/extract_mood.py
+new file mode 100644
+index 0000000..3ce77fc
+--- /dev/null
++++ b/trackcraft/extract_mood.py
+@@ -0,0 +1,10 @@
++"""Optional mood extraction placeholder."""
++
++from __future__ import annotations
++
++import pandas as pd
++
++
++def extract_mood(df: pd.DataFrame) -> pd.DataFrame:
++    """Placeholder for mood extraction using ML/API."""
++    return df.copy()
+diff --git a/trackcraft/extract_tempo.py b/trackcraft/extract_tempo.py
+new file mode 100644
+index 0000000..cf2de17
+--- /dev/null
++++ b/trackcraft/extract_tempo.py
+@@ -0,0 +1,10 @@
++"""Optional tempo extraction placeholder."""
++
++from __future__ import annotations
++
++import pandas as pd
++
++
++def extract_tempo(df: pd.DataFrame) -> pd.DataFrame:
++    """Placeholder for tempo extraction from audio analysis."""
++    return df.copy()
+diff --git a/trackcraft/fix_artist.py b/trackcraft/fix_artist.py
+new file mode 100644
+index 0000000..f19c90a
+--- /dev/null
++++ b/trackcraft/fix_artist.py
+@@ -0,0 +1,16 @@
++"""Artist name normalization helpers."""
++
++from __future__ import annotations
++
++import pandas as pd
++
++
++def fix_artists(df: pd.DataFrame) -> pd.DataFrame:
++    """Clean up artist values without mutating the original DataFrame."""
++    df_out = df.copy()
++
++    # Placeholder: strip whitespace and standardize casing later.
++    if "Artist" in df_out:
++        df_out["Artist"] = df_out["Artist"].fillna("").str.strip().replace("", None)
++
++    return df_out
+diff --git a/trackcraft/fix_filename.py b/trackcraft/fix_filename.py
+new file mode 100644
+index 0000000..1e89215
+--- /dev/null
++++ b/trackcraft/fix_filename.py
+@@ -0,0 +1,16 @@
++"""Filename normalization helpers."""
++
++from __future__ import annotations
++
++import pandas as pd
++
++
++def apply_filename_convention(df: pd.DataFrame) -> pd.DataFrame:
++    """Prepare filename column for reporting without altering disk files."""
++    df_out = df.copy()
++
++    # Placeholder: trim whitespace; future versions can enforce patterns.
++    if "File" in df_out:
++        df_out["File"] = df_out["File"].fillna("").str.strip().replace("", None)
++
++    return df_out
+diff --git a/trackcraft/fix_genres.py b/trackcraft/fix_genres.py
+new file mode 100644
+index 0000000..ba2e19d
+--- /dev/null
++++ b/trackcraft/fix_genres.py
+@@ -0,0 +1,16 @@
++"""Optional genre normalization utilities."""
++
++from __future__ import annotations
++
++import pandas as pd
++
++
++def fix_genres(df: pd.DataFrame) -> pd.DataFrame:
++    """Placeholder for genre normalization logic."""
++    df_out = df.copy()
++
++    # Placeholder: unify casing and synonyms later.
++    if "Genre" in df_out:
++        df_out["Genre"] = df_out["Genre"].fillna("").str.strip().replace("", None)
++
++    return df_out
+diff --git a/trackcraft/fix_title.py b/trackcraft/fix_title.py
+new file mode 100644
+index 0000000..23b545d
+--- /dev/null
++++ b/trackcraft/fix_title.py
+@@ -0,0 +1,16 @@
++"""Title normalization helpers."""
++
++from __future__ import annotations
++
++import pandas as pd
++
++
++def fix_titles(df: pd.DataFrame) -> pd.DataFrame:
++    """Clean up title values without mutating the original DataFrame."""
++    df_out = df.copy()
++
++    # Placeholder: strip whitespace and normalize separators later.
++    if "Title" in df_out:
++        df_out["Title"] = df_out["Title"].fillna("").str.strip().replace("", None)
++
++    return df_out
+diff --git a/trackcraft/read_metadata.py b/trackcraft/read_metadata.py
+new file mode 100644
+index 0000000..b08a2f4
+--- /dev/null
++++ b/trackcraft/read_metadata.py
+@@ -0,0 +1,144 @@
++"""Local metadata ingestion utilities."""
++
++from __future__ import annotations
++
++from collections.abc import Iterable
++from pathlib import Path
++
++import pandas as pd
++from tinytag import TinyTag
++
++from trackcraft.config import DEFAULT_INPUT_DIR, SUPPORTED_EXTENSIONS
++
++
++def extract_song(
++    file_name: str, artist_tag: str | None, title_tag: str | None
++) -> tuple[str | None, str | None]:
++    """Infer artist and title from tags or filename."""
++    stem = Path(file_name).stem
++    stem = stem.replace(" – ", " - ").replace("—", "-")
++    parts = [p.strip() for p in stem.split(" - ", 1)]
++
++    artist = (artist_tag or "").strip() or None
++    title = (title_tag or "").strip() or None
++
++    if not artist or not title:
++        if len(parts) == 2:
++            artist = artist or (parts[0] or None)
++            title = title or (parts[1] or None)
++        elif not title:
++            title = stem or None
++
++    return artist, title
++
++
++def _iter_audio_files(folder: Path | str, extensions: Iterable[str]) -> Iterable[Path]:
++    base = Path(folder)
++    for entry in base.iterdir():
++        # Filter only supported audio files by extension.
++        if entry.is_file() and entry.suffix.lower() in extensions:
++            yield entry
++
++
++def read_local_metadata(folder: Path | str = DEFAULT_INPUT_DIR) -> tuple[pd.DataFrame, list[str]]:
++    """Extract tag metadata from supported audio files in a folder."""
++    audio_data: list[dict] = []
++    skipped: list[str] = []
++
++    for path in _iter_audio_files(folder, [ext.lower() for ext in SUPPORTED_EXTENSIONS]):
++        file_name = path.name
++        try:
++            tag = TinyTag.get(path)
++            ext = path.suffix.lower().lstrip(".").upper()
++
++            raw_artist = getattr(tag, "artist", None)
++            raw_title = getattr(tag, "title", None)
++            artist, title = extract_song(file_name, raw_artist, raw_title)
++
++            if not artist and not title:
++                skipped.append(file_name)
++                continue
++
++            other = getattr(tag, "other", {}) or {}
++            isrc = next((v for k, v in other.items() if "isrc" in k.lower()), None)
++
++            audio_data.append(
++                {
++                    "File": file_name,
++                    "Title": title,
++                    "Artist": artist,
++                    "Genre": getattr(tag, "genre", None),
++                    "Year": getattr(tag, "year", None),
++                    "Duration": getattr(tag, "duration", None),
++                    "Type": ext,
++                    "BitRate": getattr(tag, "bitrate", None),
++                    "Size": getattr(tag, "filesize", None),
++                    "SampleRate": getattr(tag, "samplerate", None),
++                    "BitDepth": getattr(tag, "bitdepth", None),
++                    "Album": getattr(tag, "album", None),
++                    "AlbumArtist": getattr(tag, "albumartist", None),
++                    "Composer": getattr(tag, "composer", None),
++                    "Channels": getattr(tag, "channels", None),
++                    "Comment": getattr(tag, "comment", None),
++                    "Other": getattr(tag, "other", None),
++                    "ISRC": isrc,
++                }
++            )
++        except Exception as exc:  # noqa: BLE001
++            skipped.append(f"{file_name} | error: {exc}")
++
++    return pd.DataFrame(audio_data), skipped
++
++
++def seconds_to_mmss(seconds: float | int | None) -> str | None:
++    if seconds is None:
++        return None
++    minutes = int(seconds) // 60
++    remaining_seconds = int(seconds) % 60
++    return f"{minutes}:{remaining_seconds:02}"
++
++
++def format_metadata(df: pd.DataFrame) -> pd.DataFrame:
++    """Format columns for reporting and downstream enrichment."""
++    df_formatted = df.copy()
++    if "Year" in df_formatted:
++        df_formatted["Year"] = df_formatted["Year"].astype(str).str[:4]
++
++    if "BitRate" in df_formatted:
++        df_formatted["BitRate (kbps)"] = df_formatted["BitRate"].round(0)
++
++    if "Size" in df_formatted:
++        df_formatted["Size (MB)"] = (df_formatted["Size"] / (1024 * 1024)).round(0)
++
++    if "Duration" in df_formatted:
++        df_formatted["Duration"] = df_formatted["Duration"].apply(seconds_to_mmss)
++
++    df_formatted["Key"] = None
++    df_formatted["BPM"] = None
++    df_formatted["Fame"] = None
++    df_formatted["Mood"] = None
++    df_formatted["Energy"] = None
++    df_formatted["Groove"] = None
++    df_formatted["Comment"] = df_formatted.get("Comment")
++
++    column_order = [
++        "File",
++        "Title",
++        "Artist",
++        "Genre",
++        "Year",
++        "Duration",
++        "BPM",
++        "Key",
++        "Energy",
++        "Groove",
++        "Mood",
++        "Fame",
++        "Type",
++        "BitRate (kbps)",
++        "Size (MB)",
++        "Comment",
++    ]
++
++    available_columns = [col for col in column_order if col in df_formatted.columns]
++    return df_formatted[available_columns]
+diff --git a/trackcraft/spoti.py b/trackcraft/spoti.py
+new file mode 100644
+index 0000000..6941cfc
+--- /dev/null
++++ b/trackcraft/spoti.py
+@@ -0,0 +1,141 @@
++"""Spotify enrichment (year + popularity + audio features)."""
++
++from __future__ import annotations
++
++from collections.abc import Iterable
++from pathlib import Path
++
++import pandas as pd
++import spotipy
++from spotipy.cache_handler import CacheFileHandler
++from spotipy.exceptions import SpotifyException
++from spotipy.oauth2 import SpotifyClientCredentials
++
++from trackcraft.config import SPOTIFY_CACHE
++
++
++class SpotifyClient:
++    """Lightweight wrapper for Spotipy client creation."""
++
++    def __init__(self, cache_dir: Path | None = SPOTIFY_CACHE):
++        cache_path = Path(cache_dir) if cache_dir else None
++        self._cache_path = cache_path
++        if cache_path and cache_path.exists():
++            cache_path.unlink()
++
++        cache_handler = CacheFileHandler(cache_path=str(cache_path)) if cache_path else None
++        auth_manager = SpotifyClientCredentials(cache_handler=cache_handler)
++        self.client = spotipy.Spotify(auth_manager=auth_manager)
++
++    def ping(self) -> bool:
++        try:
++            ping = self.client.search(q="test", type="track", limit=1)
++            items = ping.get("tracks", {}).get("items", [])
++            return bool(items or ping)
++        except Exception:
++            return False
++
++
++def get_audio_features_batch(sp: spotipy.Spotify, track_ids: Iterable[str]) -> list[dict]:
++    """Fetch audio features in batches of up to 100 IDs."""
++    all_features: list[dict] = []
++    batch_size = 100
++    ids = list(track_ids)
++
++    for i in range(0, len(ids), batch_size):
++        batch = ids[i : i + batch_size]
++        try:
++            feats = sp.audio_features(batch) or []
++        except SpotifyException as exc:
++            print(f" audio_features failed for batch starting {batch[0]}: {exc}")
++            continue
++
++        all_features.extend(f for f in feats if f)
++
++    return all_features
++
++
++def enrich_with_spotify(df: pd.DataFrame, client: SpotifyClient | None = None) -> pd.DataFrame:
++    """Lookup Spotify tracks and merge year/popularity/features."""
++    client = client or SpotifyClient()
++    sp = client.client
++
++    spotify_rows: list[dict] = []
++    for row in df.itertuples(index=False):
++        file_name = getattr(row, "File", None)
++        title = getattr(row, "Title", None)
++        artist = getattr(row, "Artist", None)
++
++        if not file_name or not title or not artist:
++            continue
++
++        query = f'track:"{title}" artist:"{artist}"'
++        results = sp.search(q=query, type="track", limit=3)
++        items = results.get("tracks", {}).get("items", [])
++        if not items:
++            continue
++
++        track = items[0]
++        release_date = track["album"].get("release_date")
++        year_sp = release_date[:4] if release_date else None
++
++        spotify_rows.append(
++            {
++                "File": file_name,
++                "SpotifyID": track["id"],
++                "Fame_sp": track.get("popularity"),
++                "Year_sp": year_sp,
++                "ISRC": track.get("external_ids", {}).get("isrc"),
++            }
++        )
++
++    df_spotify = pd.DataFrame(spotify_rows)
++    if df_spotify.empty:
++        return df.copy()
++
++    track_ids = df_spotify["SpotifyID"].dropna().unique().tolist()
++    features = get_audio_features_batch(sp, track_ids)
++    df_features = pd.DataFrame(features)
++
++    df_spotify = df_spotify.merge(df_features, left_on="SpotifyID", right_on="id", how="left")
++
++    df_spotify = df_spotify.rename(
++        columns={
++            "tempo": "BPM_sp",
++            "energy": "Energy_sp",
++            "danceability": "Groove_sp",
++            "valence": "Mood_sp",
++            "key": "Key_sp",
++        }
++    )[
++        [
++            "File",
++            "BPM_sp",
++            "Energy_sp",
++            "Groove_sp",
++            "Mood_sp",
++            "Key_sp",
++            "Fame_sp",
++            "Year_sp",
++        ]
++    ]
++
++    df_out = df.merge(df_spotify, on="File", how="left")
++
++    def prefer_spotify(sp_col: str, base_col: str) -> None:
++        if sp_col in df_out.columns:
++            df_out[base_col] = df_out[sp_col].combine_first(df_out.get(base_col))
++            df_out.drop(columns=[sp_col], inplace=True)
++
++    prefer_spotify("BPM_sp", "BPM")
++    prefer_spotify("Energy_sp", "Energy")
++    prefer_spotify("Groove_sp", "Groove")
++    prefer_spotify("Mood_sp", "Mood")
++    prefer_spotify("Fame_sp", "Fame")
++    prefer_spotify("Key_sp", "Key")
++
++    if "Year_sp" in df_out.columns:
++        df_out["Year"] = df_out["Year_sp"].combine_first(df_out.get("Year"))
++        df_out.drop(columns=["Year_sp"], inplace=True)
++
++    return df_out
