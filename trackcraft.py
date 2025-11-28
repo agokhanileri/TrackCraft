@@ -219,6 +219,9 @@ test_search = sp.search(q="Eric Prydz Opus", type="track", limit=1)
 print("Search items:", len(test_search["tracks"]["items"]))
 # sanity: audio_features for a known good ID
 test_id = "3v2oAQomhOcYCPPHafS3KV"  # Eric Prydz - Opus (public, has features)
+
+features = sp.audio_features([test_id])[0]
+
 try:
     test_feats = sp.audio_features([test_id])
     print("Audio features test:", test_feats)
