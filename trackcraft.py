@@ -127,8 +127,8 @@ df1 = df0  # buffer first --> may need to discard df0 later
 #                'Extra', 'Comment', 'Offset', 'Channels'], axis=1) # drop unused cols
 # df1 = df0['File', 'Artist', 'Title', 'Genre', 'Year', 'Duration', 'Size', 'BitRate']
 df1["Year"] = df0["Year"].str[:4]  # just need the year
-df1["BitRate (kbps)"] = df0["BitRate"].round(0)
-df1["Size (MB)"] = (df0["Size"] / 1024**2).round(0)
+df1["BitRate (kbps)"] = df0["BitRate"].round(0).astype("Int64")  # prints without .0 and
+df1["Size (MB)"] = (df0["Size"] / 1024**2).round(0).astype("Int64")  # tolerates NaN
 df1["Duration"] = df0["Duration"].apply(seconds2mins)
 
 # df1.to_csv(output_path + "/df1.csv", index=False, sep='\t')
@@ -143,18 +143,18 @@ new_column_order = [
     "File",
     "Title",
     "Artist",
-    "Genre",
     "Year",
     "Duration",
+    "Genre",
     "BPM",
     "Key",
+    "Fame",
     "Energy",
     "Groove",
     "Mood",
-    "Fame",
     "Type",
-    "BitRate (kbps)",
-    "Size (MB)",
+    "BitRate",
+    "Size",
     "Comment",
 ]
 df1 = df1[new_column_order]
@@ -242,25 +242,29 @@ def debug_audio_features(sp, track_id: str):
 debug_audio_features(sp, "3v2oAQomhOcYCPPHafS3KV")
 
 # ------------------------------------------------------------------
-# Map local file to Spotify track via search
+# 1) Map local file to Spotify track via search
 spotify_rows = []
 for row in df1.itertuples(index=False):
     file_name = getattr(row, "File", None)
     title = getattr(row, "Title", None)
     artist = getattr(row, "Artist", None)
 
-    print(file_name)  # TEMP
+    print(file_name)
     if not file_name or not title or not artist:
         continue
 
     q = f'track:"{title}" artist:"{artist}"'
-    results = sp.search(q=q, type="track", limit=3)
-    items = results.get("tracks", {}).get("items", [])
+    try:
+        results = sp.search(q=q, type="track", limit=3)
+        items = results.get("tracks", {}).get("items", [])
+    except Exception as e:
+        print(f"Spotify search failed for {q}: {e}")
+        continue
+
     if not items:
         continue
 
-    track = items[0]  # later: add scoring
-
+    track = items[0]  # top hit
     release_date = track["album"].get("release_date")
     year_sp = release_date[:4] if release_date else None
 
@@ -279,43 +283,31 @@ for row in df1.itertuples(index=False):
 df2 = pd.DataFrame(spotify_rows)  # Spotify-only metadata per File
 print(f"Matched {len(df2)} / {len(df1)} files via search.")
 
-# Fetch audio features for all matched SpotifyIDs
+
+#  Build df3 for for all matched SpotifyIDs (no audio_features)
 if df2.empty:
     print("Problem: df2 is empty, copying df1 to df3")
     df3 = df1.copy()
 else:
     # 2) Fetch audio features for matched SpotifyIDs
-    track_ids = df2["SpotifyID"].dropna().unique().tolist()
-    features = get_audio_features_batch(sp, track_ids)
-    df_features = pd.DataFrame(features)  # has: id, tempo, energy, danceability, valence, key, ...
-
+    # track_ids = df2["SpotifyID"].dropna().unique().tolist()
+    # features = get_audio_features_batch(sp, track_ids)
+    # df_features = pd.DataFrame(features)  # has: id, tempo, energy, danceability, valence, key, ...
     # Merge into df2
-    df2 = df2.merge(df_features, left_on="SpotifyID", right_on="id", how="left")
-
-    # Keep only enrichment-relevant fields
-    df2 = df2.rename(
-        columns={
-            "tempo": "BPM_sp",
-            "energy": "Energy_sp",
-            "danceability": "Groove_sp",
-            "valence": "Mood_sp",
-            "key": "Key_sp",
-        }
-    )[
-        [
-            "File",
-            "BPM_sp",
-            "Energy_sp",
-            "Groove_sp",
-            "Mood_sp",
-            "Key_sp",
-            "Fame_sp",
-            "Year_sp",
-        ]
-    ]
+    # df2 = df2.merge(df_features, left_on="SpotifyID", right_on="id", how="left")
 
     # 3) Build df3 = df1 enriched (user-facing)
-    df3 = df1.merge(df2, on="File", how="left")
+    # Merge basic Spotify metadata (Fame, Year) only
+    df3 = df1.merge(df2[["File", "Fame_sp", "Year_sp"]], on="File", how="left")
+
+    # Prefer Spotify where available; fall back to df1
+    if "Fame_sp" in df3.columns:
+        df3["Fame"] = df3["Fame_sp"].combine_first(df3.get("Fame"))
+        df3.drop(columns=["Fame_sp"], inplace=True)
+
+    if "Year_sp" in df3.columns:
+        df3["Year"] = df3["Year_sp"].combine_first(df3.get("Year"))
+        df3.drop(columns=["Year_sp"], inplace=True)
 
     # Prefer Spotify where available; fall back to df1
     def prefer_spotify(sp_col, base_col):
@@ -330,13 +322,6 @@ else:
     prefer_spotify("Fame_sp", "Fame")
     prefer_spotify("Key_sp", "Key")
 
-    if "Year_sp" in df3.columns:
-        df3["Year"] = df3["Year_sp"].combine_first(df3.get("Year"))
-        df3.drop(columns=["Year_sp"], inplace=True)
-
-
-# Extract Year:
-
 
 # Extract Tempo:
 
@@ -344,19 +329,8 @@ else:
 # Extract Key:
 
 
-# Extract Fame/Mood/Energy/Groove
+# Extract Mood/Energy/Groove
 
-
-# Enhance Name: Optional, fix the case and foreign letters
-# - Convention: Artist1 & Artist2 – Track (Artist3 Remix) [ft. Artist4]
-# first_row = df1.iloc[3]
-# if str(first_row["Title"]) is None:  # if Title is missing
-#     song = first_row.Title  # search for the filename directly
-# elif str(first_row["Artist"]) is None:  # if just Artist is missing
-#     song = str(first_row["Title"])  # search for the Title only
-# else:  # both available --> construct the full search pattern
-#     song = str(first_row["Artist"]) + " - " + str(first_row["Title"])
-# print(first_row.File)
 
 # Extract Type: Optional, in case the extension was misleading
 
@@ -373,14 +347,8 @@ else:
 # print(f"Danceability: {audio_features['danceability']}")
 
 
-# 5) Handle duplicates and suggest best version
-# 6) Visualize and mark outliers
-# 6a) Genre / BPM / Year /
-# 6b) Fame / Energy /
-
-
 # =================================================================================================
-# 3) Visualize metadata
+# 3) Report: Visualize and mark outliers
 # df0.to_csv("~/Desktop/df1.csv", index=False, sep="\t")  #  raw metadata
 df1.to_csv("~/Desktop/df1.csv", index=False, sep="\t")  # after formatting
 df2.to_csv("~/Desktop/df2.csv", index=False, sep="\t")  # spotify metadata
@@ -388,3 +356,24 @@ df3.to_csv("~/Desktop/df3.csv", index=False, sep="\t")  # merged metadata
 # df4.to_csv("~/Desktop/df1.csv", index=False, sep="\t")  # after final reformatting
 m0, n0 = df0.shape
 m1, n1 = df1.shape
+
+
+# =================================================================================================
+# 4) Naming:
+
+# Enhance Name: Optional, fix the case and foreign letters
+# - Convention: Artist1 & Artist2 – Track (Artist3 Remix) [ft. Artist4]
+# first_row = df1.iloc[3]
+# if str(first_row["Title"]) is None:  # if Title is missing
+#     song = first_row.Title  # search for the filename directly
+# elif str(first_row["Artist"]) is None:  # if just Artist is missing
+#     song = str(first_row["Title"])  # search for the Title only
+# else:  # both available --> construct the full search pattern
+#     song = str(first_row["Artist"]) + " - " + str(first_row["Title"])
+# print(first_row.File)
+
+
+# 5) Handle duplicates and suggest best version
+# 6) Visualize and mark outliers
+# 6a) Genre / BPM / Year /
+# 6b) Fame / Energy /

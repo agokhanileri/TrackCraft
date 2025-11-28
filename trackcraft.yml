@@ -1,14 +1,14 @@
-name: core
+name: trackcraft
+
 channels: [conda-forge]
 channel_priority: strict
-dependencies: 
 
+dependencies: 
 # Essentials
-- python=3.13.* # stdlib(os, math, pathlib, asyncio, etc.) + Cython
+- python=3.13 	# stdlib(os, math, pathlib, asyncio, etc.) + Cython
 - pip           		# packaging, runtime
 - pip:
     - detect-secrets==1.5.0
-
 - ipython       	# improved REPL
 
 # Performance
@@ -26,19 +26,29 @@ dependencies:
 - pre-commit   	# keeps repo clean by auto-checking during git commits
 - rich             		# colored log + pretty print
 
-# Common packages
+# Visualization
 - numpy         	# arrays, linear algebra, binary-heavy
-- matplotlib    	# plotter
 - pandas  		# data frames
+- matplotlib    	# plotter
 - seaborn          	# pretty stats plots
+
+# Web/APIs
 - requests         	# API calls
-
-
-# Specific packages
-- tinytag 		# lightt audio metadata
-- mutagen           # deep metadata handling / tagging
 - spotipy		# Spotify Web API client
-- beautifulsoup4   # web scraping (for metadata cleanup)
-- lxml             	# fast parser backend for BeautifulSoup
-- tqdm             	# progress bars during metadata scan
+- openai 		# playlist ordering, score double checking, smart tagging
+#- beautifulsoup4   # web scraping (for metadata cleanup)
+#- lxml             	# fast parser backend for BeautifulSoup
+#- tqdm             	# progress bars during metadata scan
+
+# Audio/DSP
+- tinytag 		# lightt audio metadata
+- mutagen           # deep metadata handling/tagging
+- librosa 		# tempo/onset estimation, spectral centroid/rolloff/flux, MFCCs/chroma for key
+- pysoundfile     # audio R/W, complements librosa
+
+# ML
+- scikit-learn
+- xgboost 		# high-capacity regression/classification on labeled tracks
+
+
 

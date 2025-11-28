@@ -5,6 +5,7 @@ inputs/
 outputs/
 extras/
 .gitconfig
+.spotipy_cache
 .secrets.baseline
 
 # ========================================
@@ -99,13 +100,15 @@ coverage.xml  # pytest-cov XML output
 # Media / Binary (Consider Git LFS)
 # Uncomment if using Git LFS
 # ========================================
-# *.mp4
-# *.mp3
-# *.wav
-# *.mov
-# *.flac
-# *.jpg
-# *.png
-# *.zip
-# *.tar
-# *.tar.gz
+*.aiff
+*.mp4
+*.mp3
+*.wav
+*.mov
+*.flac
+*.jpg
+*.png
+*.zip
+*.tar
+*.tar.gz
+patches/
