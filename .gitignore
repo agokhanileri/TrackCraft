@@ -110,3 +110,4 @@ coverage.xml  # pytest-cov XML output
 # *.tar
 # *.tar.gz
 inputs/*.aiff
+.spotipy_cache
