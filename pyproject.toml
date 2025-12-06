@@ -6,8 +6,8 @@ build-backend = "setuptools.build_meta"
 # Specific
 ##########################
 [project]
-name = trackcraft
-version = 0.8.0
+name = "trackcraft"
+version = "0.8.0"
 description = "Audio tracks analyzer"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -25,11 +25,12 @@ dependencies = [
   "numpy",
   "pandas",
   "matplotlib",
+  "spotipy",            # needed to capture popularity at least
   "fastapi",            # fine to omit pin if env is locked elsewhere
+  "uvicorn",            # for docker
 # "httpx"               # or use "requests" (pick one)
 # "python-multipart"    # add only if you accept file uploads
 # "pydantic"            # optional explicit pin if you want control
-  "spotipy",            # needed to capture popularity at least
 # "openai"              # needed to sort at least
 ]
 
@@ -79,12 +80,12 @@ select = [
   "TID",      # tidy imports
 ]
 ignore = [
-  "T201"      # print() occurrences
-  "D103"      # missing function docstrings --> for compactness
-  "D107"      # missing class docstrings --> //
-  "B018"      # unused loop vars --> for clarity (need manual check for big loops)
-  "N802"      # camelCase not allowed --> allow for LC
-  "PLR1702"   # combine if branches sharing the same body --> for clarity
+  "T201",     # print() occurrences
+  "D103",     # missing function docstrings --> for compactness
+  "D107",     # missing class docstrings --> //
+  "B018",     # unused loop vars --> for clarity (need manual check for big loops)
+  "N802",     # camelCase not allowed --> allow for LC
+  "PLR1702",  # combine if branches sharing the same body --> for clarity
 ]
 
 [tool.ruff.lint.isort]
@@ -102,6 +103,6 @@ warn_redundant_casts = true
 warn_unused_configs = true
 disallow_untyped_defs = false
 
-[tool:pytest]
-addopts = -q
-testpaths = tests
+[tool.pytest]
+addopts = "-q"
+testpaths = ["tests"]

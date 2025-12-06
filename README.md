@@ -1,57 +1,27 @@
-## Description
-
 # TrackCraft
-Audio tracks analyzer and organizer.
 
-## Content
+Audio tracks analyzer, enriching, and normalizing audio metadata from a local library.
+
+## Structure
+- `trackcraft.py` – Main driver via CLI.
+- `inputs/` - Input path to load tracks.
+- `outputs/` – Output path to dump logs, statistical reports, and graphs.
+- `load_tracks.py` – File I/O and load ops.
 
 
-### Status
+## Overview
+1. Load tracks from a given folder
+2. Pull year and popularity from Spotify
+3. Extract other features
 
-
-###
+## Requirements
+- Python 3.12+
+- Spotify API credentials in env variables: `SPOTIPY_CLIENT_ID` and `SPOTIPY_CLIENT_SECRET`
 
 ## Manual
+Run the CLI from the repository root.
+```bash
+python trackcraft.py full --input-dir ./inputs --output-dir ./outputs [--skip-spotify]
+```
 
-<u>Requirements:</u>
-* <u>Python</u>: version 3x (3.12 is used).
-* <u>Libraries</u>: Default libs used.
-* <u>Inputs</u>: Placed under "./inputs"
-* <u>Outputs</u>: Placed under "./outputs"
-
-
-###
-Scripts are indented to be executed line-by-line execution.
-* Printing ommited most of the time.
-* Whitespaces are minimized for better focus and easier scrolling,
-* Relevant lines are grouped together as much as possible.
- 
-###
-<u>[ScriptPull.py](./ScriptPull.py):</u> Useful classes/methods to utilize in problems and projects.
-  * to use classes: ``` from ScriptPull import MyClass ```
-  * to use methods: ``` from ScriptPull import * ```
-   
-###       
-<u>Shortcuts used:
-<pre>
-Q   = Question
-Ops = Operations
-DS  = Data Structures
-BT  = Binary Tree
-LL  = Linked List
-sol = solution
-mod = modification
-ans = answer
-iter= iterate
-concat = concatenate
-lib = library
-func = function
-
-
-## License
-This project is licensed under the BSD 3-Clause License.
-(see the LICENSE.md file for details)
-
- 
-
-
+Each step saves intermediate TSVs into `outputs/` and logs skipped files to `outputs/skipped.txt` when applicable.

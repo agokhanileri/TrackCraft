@@ -1,8 +1,9 @@
 """Scraper through Spotify API."""
 
 import os
-import pandas as pd
 from functools import lru_cache
+
+import pandas as pd
 import spotipy
 from spotipy.cache_handler import CacheFileHandler
 from spotipy.exceptions import SpotifyException
@@ -11,7 +12,8 @@ from spotipy.oauth2 import SpotifyClientCredentials
 
 # =================================================================================================
 def _connect_spotify(project_path: str = ".") -> spotipy.Spotify:
-    """Return a connected Spotify client (ClientCredentials flow)."""
+    """Return a connected Spotify client via ClientCredentials flow."""
+
     cache_path = os.path.join(project_path, ".spotipy_cache")
     if os.path.exists(cache_path):
         os.remove(cache_path)
@@ -21,16 +23,18 @@ def _connect_spotify(project_path: str = ".") -> spotipy.Spotify:
 
     # Simple connectivity test
     try:
-        ping = sp.search(q="test", type="track", limit=1)
-        items = ping.get("tracks", {}).get("items", [])
-        print(f"Spotify API OK ({len(items)} items from test query).")
+        _ping = sp.search(q="test", type="track", limit=1)  # silent/test vars
+        _items = _ping.get("tracks", {}).get("items", [])
+        print("Spotipy connected")
     except Exception as e:
-        print(f"[Warning] Spotify API connection test failed: {e}")
+        print(f"[Warning] Spotipy failed: {e}")
     return sp
 
 
+# =================================================================================================
 def _search_track(sp: spotipy.Spotify, title: str, artist: str) -> dict | None:
     """Search Spotify for a given title/artist and return top track metadata."""
+
     q = f'track:"{title}" artist:"{artist}"'
     try:
         results = sp.search(q=q, type="track", limit=3)
@@ -53,6 +57,7 @@ def _search_track(sp: spotipy.Spotify, title: str, artist: str) -> dict | None:
 # =================================================================================================
 def enrich_spotify(df: pd.DataFrame, project_path: str = ".") -> pd.DataFrame:
     """Augment df with Spotify-derived columns (e.g., Fame, Year)."""
+
     sp = _connect_spotify(project_path)
 
     # Optional memo in case rows repeat artist/title
@@ -79,16 +84,16 @@ def enrich_spotify(df: pd.DataFrame, project_path: str = ".") -> pd.DataFrame:
         return df.copy()
 
     df_sp = pd.DataFrame(rows)
-    print(f"Matched {len(df_sp)} / {len(df)} files via Spotify search.")
+    print(f"Matched {len(df_sp)} / {len(df)} files on Spotify.")
 
-    # Merge once; keep all *_sp cols for later preference
-    keep_cols = ["File"] + [c for c in df_sp.columns if c.endswith("_sp")]
-    df_out = df.merge(df_sp[keep_cols], on="File", how="left")
+    # Merge all Spotify metadata back onto the original rows
+    df_out = df.merge(df_sp, on="File", how="left")
     return df_out
 
 
 def prefer_columns(df: pd.DataFrame, pairs: list[tuple[str, str]]) -> pd.DataFrame:
-    """For each (preferred_col, final_col), prefer preferred_col values safely and drop preferred."""
+    """Prefer source columns when filling final columns, then drop the sources."""
+
     out = df.copy()
     for preferred, final in pairs:
         if preferred not in out.columns:

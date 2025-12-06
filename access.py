@@ -1,10 +1,11 @@
-"""Parse audio filenames into Artist / Title fields using DJ metadata convention:
-Artist = 'Artist1 & Artist2'
-Title  = 'Track (Artist3 Remix) [ft. Artist4]'
-"""
+"""Load tracks by parsing filenames using convention:
+Artist = Artist1 & Artist2 & ...
+Title  = Song (Artist3 Remix) [ft. Artist4]"""
 
 import os
-import re, unicodedata
+import re
+import unicodedata
+
 import pandas as pd
 
 
@@ -35,7 +36,8 @@ def _parse_filename(fname: str) -> dict:
     return {"File": fname, "Artist": artist, "Title": title}
 
 
-def load(path: str) -> pd.DataFrame:
+# =================================================================================================
+def load_tracks(path: str) -> pd.DataFrame:
     folder = os.path.expanduser(path)
     if not os.path.exists(folder):
         raise FileNotFoundError(f"Tracks folder not found: {folder}")
@@ -49,5 +51,5 @@ def load(path: str) -> pd.DataFrame:
 
     rows = [_parse_filename(f) for f in files]
     df = pd.DataFrame(rows)
-    print(f"Loaded {len(df)} items from {folder}")
+    print(f"Loaded {len(df)} items from {folder}\n")
     return df

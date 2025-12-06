@@ -1,6 +1,9 @@
-import pandas as pd
-import matplotlib.pyplot as plt
+"""Generates statistical and visual report on a given data frame."""
+
 from pathlib import Path
+
+import matplotlib.pyplot as plt
+import pandas as pd
 
 
 # =================================================================================================
@@ -11,10 +14,10 @@ def compute_statistics(df: pd.DataFrame) -> pd.DataFrame:
     for col in ["Year", "BPM", "Energy", "Danceability", "Loudness"]:
         if col in df.columns:
             s = pd.to_numeric(df[col], errors="coerce")
-            stats[f"{col.lower()}_min"]  = s.min(skipna=True)
-            stats[f"{col.lower()}_max"]  = s.max(skipna=True)
+            stats[f"{col.lower()}_min"] = s.min(skipna=True)
+            stats[f"{col.lower()}_max"] = s.max(skipna=True)
             stats[f"{col.lower()}_mean"] = s.mean(skipna=True)
-            stats[f"{col.lower()}_std"]  = s.std(skipna=True)
+            stats[f"{col.lower()}_std"] = s.std(skipna=True)
 
     return pd.DataFrame([stats])
 
@@ -30,7 +33,7 @@ def plot_distributions(df: pd.DataFrame, out_dir: str = "outputs/plots") -> None
     plt.close()
 
 
-def analyze(df: pd.DataFrame, do_report=True, do_plot=True) -> pd.DataFrame:
+def analyze_tracks(df: pd.DataFrame, do_report=True, do_plot=True) -> pd.DataFrame:
     """Run metadata analysis pipeline."""
     result = None
     if do_report:

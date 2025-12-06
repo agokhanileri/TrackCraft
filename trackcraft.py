@@ -1,12 +1,10 @@
 """TrackCraft main driver."""
 
 import os
-import pandas as pd
 
-from load_tracks import *
-from analyze_tracks import *
-from spoti import *
-
+from access import load_tracks
+from analysis import analyze_tracks
+from spoti import enrich_spotify
 
 # =================================================================================================
 # Control knobs:
@@ -25,7 +23,7 @@ os.makedirs(output_path, exist_ok=True)
 # =================================================================================================
 def main():
     # 1) Load raw metadata
-    df0 = load(input_path)
+    df0 = load_tracks(input_path)
     df0.to_csv(os.path.join(output_path, "df0.tsv"), index=False, sep="\t")  # save it
     # print(f"Loaded {len(df0)} tracks.")
 
@@ -35,7 +33,7 @@ def main():
     df1.to_csv(os.path.join(output_path, "df1.tsv"), index=False, sep="\t")  # save it
 
     # 3) Analyze results
-    analyze(df1, report, plot)
+    analyze_tracks(df1, report, plot)
 
 
 if __name__ == "__main__":
