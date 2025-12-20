@@ -49,10 +49,14 @@ lambda-ric    = ["awslambdaric>=2,<3"]  # for zip-based Python runtime
 [tool.setuptools]
 include-package-data = true
 zip-safe = false
+package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
-where = ["."]
-exclude = ["tests*"]
+# where = ["."]
+where = ["src"]
+exclude = ["tests"]
+exclude = ["inputs"]
+exclude = ["outputs"]
 
 
 ##########################
@@ -66,6 +70,7 @@ skip-string-normalization = false
 [tool.ruff]
 line-length = 99
 target-version = "py312"
+lint.select = ["E","F","I","B","UP"]
 
 [tool.ruff.lint]
 select = [

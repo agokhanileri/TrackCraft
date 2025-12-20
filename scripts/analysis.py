@@ -1,6 +1,7 @@
 """Generates statistical and visual report on a given data frame."""
 
 from pathlib import Path
+from typing import Dict, Iterable, Tuple
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -22,7 +23,7 @@ def compute_statistics(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame([stats])
 
 
-def plot_distributions(df: pd.DataFrame, out_dir: str = "outputs/plots") -> None:
+def plot_distributions(df: pd.DataFrame, out_dir: str = "outputs") -> None:
     """Generate basic distribution plots for key metadata fields."""
     Path(out_dir).mkdir(parents=True, exist_ok=True)
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))

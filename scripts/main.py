@@ -1,15 +1,19 @@
-"""TrackCraft main driver."""
+"""TrackCraft CLI entry imports from package via __init__.py."""
 
 import os
 
-from access import load_tracks
-from analysis import analyze_tracks
-from spoti import enrich_spotify
+
+#from access import load_tracks
+#from spoti import enrich_spotify
+#from analysis import analyze_tracks
+#from analysis2 import analyze_tracks2
+from trackcraft import analyze_tracks, compute_statistics, load_tracks, enrich_spotify
+
 
 # =================================================================================================
 # Control knobs:
-report = True
-plot = False
+report_en = True
+plot_en = False
 
 # Project paths:
 project_path = os.path.expanduser("~/Git/TrackCraft/")
@@ -33,7 +37,10 @@ def main():
     df1.to_csv(os.path.join(output_path, "df1.tsv"), index=False, sep="\t")  # save it
 
     # 3) Analyze results
-    analyze_tracks(df1, report, plot)
+    print("Analyzing Tracks v1")
+    analyze_tracks(df1, report_en, plot_en)
+    print("Analyzing Tracks v2")
+    analyze_tracks2(df1, report_en, plot_en)
 
 
 if __name__ == "__main__":

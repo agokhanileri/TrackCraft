@@ -3,9 +3,9 @@
 Audio tracks analyzer, enriching, and normalizing audio metadata from a local library.
 
 ## Structure
-- `trackcraft.py` – Main driver via CLI.
 - `inputs/` - Input path to load tracks.
 - `outputs/` – Output path to dump logs, statistical reports, and graphs.
+- `trackcraft.py` – Main driver via CLI.
 - `load_tracks.py` – File I/O and load ops.
 
 
@@ -25,3 +25,7 @@ python trackcraft.py full --input-dir ./inputs --output-dir ./outputs [--skip-sp
 ```
 
 Each step saves intermediate TSVs into `outputs/` and logs skipped files to `outputs/skipped.txt` when applicable.
+
+## License
+© 2025 Gokhan Ileri — This repository and its contents are proprietary.
+Commercial or derivative use requires a written license from the author.
